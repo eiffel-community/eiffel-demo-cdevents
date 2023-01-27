@@ -19,8 +19,8 @@
 
 [![Sandbox badge](https://img.shields.io/badge/Stage-Sandbox-yellow)](https://github.com/eiffel-community/community/blob/master/PROJECT_LIFECYCLE.md#stage-sandbox)
 
-# Eiffel Community Repository Template
-This repository serves as a template for [Eiffel Community](https://eiffel-community.github.io) repositories, in order to promote similar process and handling across the community. To create a new repo, first copy the contents of this repo. Then follow the steps in [repo-checklist.md](./repo-checklist.md) before deleting it.
+# Eiffel Demo CDEvents
+A demo ground for showing how Eiffel and CDEvents can interact.
 
 ## Code of Conduct and Contributing
 To get involved, please see [Code of Conduct](https://github.com/eiffel-community/.github/blob/master/CODE_OF_CONDUCT.md) and [contribution guidelines](https://github.com/eiffel-community/.github/blob/master/CONTRIBUTING.md).
