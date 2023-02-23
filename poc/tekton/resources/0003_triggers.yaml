@@ -1,0 +1,53 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: Trigger
+metadata:
+  name: cdevent-artifact-published
+  namespace: cdevents
+spec:
+  interceptors:
+    - ref:
+        name: "cel"
+      params:
+        - name: "filter"
+          value: "header.match('Ce-Type', 'cd.artifact.published.v1')"
+        - name: "overlays"
+          value:
+            - key: artifactId
+              expression: "header['Ce-Artifactid'][0].replace('kind-registry', 'localhost')"
+  bindings:
+    - name: artifactId
+      value: $(extensions.artifactId)
+    - name: artifactName
+      value: $(header.Ce-Artifactname)
+    - name: shkeptncontext
+      value: $(body.shkeptncontext)
+    - name: triggerid
+      value: $(body.triggerid)
+  template:
+    spec:
+      params:
+        - name: artifactId
+        - name: artifactName
+        - name: shkeptncontext
+        - name: triggerid
+      resourceTemplates:
+        - apiVersion: "tekton.dev/v1beta1"
+          kind: PipelineRun
+          metadata:
+            generateName: "deploy-artifact-"
+          spec:
+            serviceAccountName: runner
+            pipelineRef:
+              name: deploy-artifact
+            params:
+              - name: image
+                value: $(tt.params.artifactId)
+              - name: name
+                value: $(tt.params.artifactName)
+              - name: shkeptncontext
+                value: $(tt.params.shkeptncontext)
+              - name: triggerid
+                value: $(tt.params.triggerid)
+              - name: envId
+                value: "production"

@@ -1,0 +1,42 @@
+@startuml
+	User -> Tekton: Start Build Pipeline
+	Tekton -> Tekton: Run Build Pipeline
+	Tekton -> Spinnaker: cd.artifact.packaged
+	Spinnaker -> Spinnaker: Run Deploy Pipeline Job to test
+    Spinnaker -> EventTranslator: cd.pipelinerun.finished.v1
+    Note left of EventTranslator : cdevent -> Eiffel event
+	EventTranslator -> Jenkins : EiffelActivityFinishedEvent
+	Note right of EventTranslator: (identity, artifactid, artifactname)
+	Jenkins -> Jenkins : Run some Test Suits 
+	Jenkins -> EventTranslator : EiffelTestSuiteFinishedEvent
+	Note left of Jenkins: (artifactid, artifactname)
+	Note left of EventTranslator : Eiffel event -> cdevent
+	EventTranslator -> KeptnInbound : cd.test.suite.finished.v1
+	Note right of Tekton: (ID, Name, Version)
+	KeptnInbound -> Keptn: prod.delivery.triggered
+	Note right of KeptnInbound: (Project, Stage, Service, Config Change)
+	Note left of Keptn: Name -> Service, ID -> Config Change
+	Keptn -> User: Wait for Approval
+	Note left of User: Config Change
+	User -> Keptn: Approved!
+	Keptn -> KeptnOutbound: deployment.triggered
+	Note right of Keptn: (Project, Service, Stage, Id, Ctx)
+	Note right of Keptn: The Keptn Ctx identifies the Deployment Task
+	KeptnOutbound -> TektonTriggers: cd.artifact.published
+	Note right of KeptnOutbound: (ID, Name, Image, TriggerId, Ctx)
+	Note left of TektonTriggers: TriggerId = Id from deployment, ID and Image -> Config Change, Name -> Service
+	Note right of KeptnOutbound: (ID, Name, Image, TriggerId, Ctx)
+	KeptnOutbound -> KeptnInbound: cd.artifact.published
+    Note left of KeptnOutbound: (ID, Name, Image, TriggerId, Ctx)
+    KeptnInbound -> Keptn: deployment.started
+    Note right of KeptnInbound: (Project, Stage, Service)
+    TektonTriggers -> Tekton: start pipeline
+    Note left of TektonTriggers: (ArtifactID, ArtifactName, TriggerId, Ctx)
+    Tekton -> Tekton: Run Deploy Pipeline
+    Tekton -> KeptnInbound: cd.service.deployed
+    Note right of Tekton: (EnvID, ServiceName, Version, TriggerId, Ctx)
+    Note left of Spinnaker: (EnvID, ServiceName, Version, TriggerId, Ctx)
+    Note left of KeptnInbound: EnvId and ServiceName -> Name/Service, Version = Deployment Gen
+    KeptnInbound -> Keptn: deployment.finished
+    Note right of KeptnInbound: (Project, Stage, Service, URI, Name, TriggerId, Ctx)
+@enduml
