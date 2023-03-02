@@ -1,5 +1,5 @@
 # Protocol Proof of Concept to translate events between Eiffel and CDEvents
-The proof of concept is to using the existing SIG Events PoC and extend with Eiffel events using [eiffel-translator-cdevents](https://github.com/eiffel-community/eiffel-translator-cdevents)
+The proof of concept is to use the existing SIG Events PoC and extend with the Eiffel events using [eiffel-translator-cdevents](https://github.com/eiffel-community/eiffel-translator-cdevents)
 
 The SIG Events proof of concept shows interaction between [Tekton](https://tekton.dev)
 and [Keptn](https://keptn.sh/), [Spinnaker](https://spinnaker.io) using the CD Events specification created by [CDF SIG Events Protocol Proof of Concept](https://github.com/cdfoundation/sig-events/tree/main/poc#cdf-sig-events-protocol-proof-of-concept).
@@ -11,7 +11,7 @@ Similarly eiffel-translator-cdevents listens to RabbitMQ message bus and transla
 ## PoC Overview
 
 The proof of concept is an interaction between [Tekton](https://tekton.dev)
-and [Keptn](https://keptn.sh/), [Spinnaker](https://spinnaker.io) using the CDEvents and [Jenkins] using [Eiffel events](https://eiffel-community.github.io/).
+and [Keptn](https://keptn.sh/), [Spinnaker](https://spinnaker.io) using the CDEvents and [Jenkins](https://jenkins.io) using [Eiffel events](https://eiffel-community.github.io/).
 
 Tekton is an open-source framework for creating CI/CD systems, and is a CDF
 founding project.
