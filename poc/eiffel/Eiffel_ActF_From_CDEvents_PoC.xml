@@ -1,0 +1,142 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>EiffelActivityFinishedEvent received from CDEvents PoC,&#xd;
+Spinnaker deployed the newly created artifact to test from Jenkins here.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.plugins.jira.JiraProjectProperty plugin="jira@3.0.11"/>
+    <com.ericsson.eiffel.fem.messaging.ImplicitEiffelMessagingContributorProperty plugin="eiffel-fem@2.0.16">
+      <scriptEnabled>false</scriptEnabled>
+    </com.ericsson.eiffel.fem.messaging.ImplicitEiffelMessagingContributorProperty>
+    <com.ericsson.eiffel.fem.messaging.EiffelMessageFlowContextJobProperty plugin="eiffel-fem@2.0.16">
+      <enabled>false</enabled>
+      <flowContext></flowContext>
+    </com.ericsson.eiffel.fem.messaging.EiffelMessageFlowContextJobProperty>
+    <com.ericsson.eiffel.fem.injection.EiffelVariableInjectionJobProperty plugin="eiffel-fem@2.0.16">
+      <enabled>false</enabled>
+      <defaultArm>-1</defaultArm>
+      <armSelection>
+        <armIds class="java.util.Collections$UnmodifiableSet">
+          <c class="set"/>
+        </armIds>
+      </armSelection>
+      <explicitInjections/>
+    </com.ericsson.eiffel.fem.injection.EiffelVariableInjectionJobProperty>
+    <com.ericsson.eiffel.fem.messaging.ImplicitEiffelMessagingJobProperty plugin="eiffel-fem@2.0.16">
+      <implicitMessagingEnabled>false</implicitMessagingEnabled>
+      <eiffelActivityFinishedEventDisabled>false</eiffelActivityFinishedEventDisabled>
+    </com.ericsson.eiffel.fem.messaging.ImplicitEiffelMessagingJobProperty>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>json</name>
+          <description></description>
+          <defaultValue></defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <com.ericsson.eiffel.fem.messaging.UserDomainSuffixJobProperty plugin="eiffel-fem@2.0.16">
+      <enabled>false</enabled>
+      <userDomainSuffix></userDomainSuffix>
+    </com.ericsson.eiffel.fem.messaging.UserDomainSuffixJobProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>
+#!/bin/sh
+
+export artifactid=$(echo $json | grep -o &apos;\\&quot;value\\&quot;:\\&quot;[^\\&quot;]*&apos; | grep -o &apos;[^\&quot;]*$&apos; | grep cdevent)
+export artifactname=$(echo $json | grep -o &apos;\\&quot;value\\&quot;:\\&quot;[^\\&quot;]*&apos; | grep -o &apos;[^\&quot;]*$&apos; | grep -v cdevent)
+
+echo $artifactid
+echo $artifactname
+
+echo &quot;artifactid=$artifactid&quot; &gt; /tmp/artifactProperties
+echo &quot;artifactname=$artifactname&quot; &gt;&gt; /tmp/artifactProperties
+
+
+echo &quot;========================================================================&quot;
+
+echo &quot;Spinnaker deployed the artifact $artifactid in the test environment&quot;
+
+echo &quot;========================================================================&quot;
+
+echo &quot;Jenkins Job will be running to start Testsuits to validate newly created artifact&quot;
+
+
+sleep 5
+
+
+echo &quot;========================================================================&quot;
+
+echo &quot;Testsuite is successful, send an event EiffelTestSuiteFinishedEvent to Keptn to trigger the Manual approval&quot;
+
+echo &quot;========================================================================&quot;
+</command>
+    </hudson.tasks.Shell>
+    <EnvInjectBuilder plugin="envinject@2.3.0">
+      <info>
+        <propertiesFilePath>/tmp/artifactProperties</propertiesFilePath>
+      </info>
+    </EnvInjectBuilder>
+    <com.ericsson.eiffel.fem.messaging.EiffelMessageDispatcherBuildStep plugin="eiffel-fem@2.0.16">
+      <inputJson>{
+  &quot;msgParams&quot;: {
+    &quot;meta&quot;: {
+      &quot;type&quot;: &quot;EiffelTestSuiteFinishedEvent&quot;,
+      &quot;version&quot;: &quot;3.0.0&quot;,
+      &quot;tags&quot;: [
+        &quot;&quot;
+      ],
+      &quot;source&quot;: {
+        &quot;domainId&quot;: &quot;&quot;,
+        &quot;host&quot;: &quot;&quot;,
+        &quot;name&quot;: &quot;&quot;,
+        &quot;uri&quot;: &quot;&quot;
+      }
+    }
+  },
+  &quot;eventParams&quot;: {
+    &quot;data&quot;: {
+      &quot;outcome&quot;: {
+        &quot;verdict&quot;: &quot;PASSED&quot;,
+        &quot;conclusion&quot;: &quot;SUCCESSFUL&quot;,
+        &quot;description&quot;: &quot;&quot;
+      },
+      &quot;persistentLogs&quot;: null,
+      &quot;customData&quot;: [
+        {
+          &quot;key&quot;: &quot;artifactid&quot;,
+          &quot;value&quot;: &quot;$artifactid&quot;
+        },
+        {
+          &quot;key&quot;: &quot;artifactname&quot;,
+          &quot;value&quot;: &quot;$artifactname&quot;
+        }
+      ]
+    },
+    &quot;links&quot;: [
+      {
+        &quot;type&quot;: &quot;TEST_SUITE_EXECUTION&quot;,
+        &quot;target&quot;: &quot;c358779a-44d7-42d1-8cc0-a50ed2e5229e&quot;
+      }
+    ]
+  }
+}</inputJson>
+      <customGenerateURL></customGenerateURL>
+      <customPublishURL></customPublishURL>
+      <eventType>EiffelTestSuiteFinishedEvent</eventType>
+    </com.ericsson.eiffel.fem.messaging.EiffelMessageDispatcherBuildStep>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
